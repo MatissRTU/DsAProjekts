@@ -25,3 +25,7 @@
     2.solis - nospied starts
     3.solis - Pārņem pasauli
     4.solis - Atvērsies vaļā excels ar datiem
+## Papildus funkcijas kas ir plānošanas stadijā
+    Ņemt preču cenas bez klienta atlaides un atvēlēt logu ietaupījuma %
+    Saglabāt nevis csv bet excel failā uzreiz
+    vispārīga optimizācija(ja būs iespējama)
