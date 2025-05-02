@@ -21,8 +21,8 @@ if page.status_code == 200:
     for block in product_sections:
         gtm_div = block.find("div", class_="gtm-categories")
         if gtm_div:
-            name = gtm_div.get("data-name", "N/A")
-            price = gtm_div.get("data-price", "N/A")
+            name = gtm_div.get("data-name")
+            price = gtm_div.get("data-price")
             print(f"{name} - {price}€")
             product_data.append([name, price])
     print()
