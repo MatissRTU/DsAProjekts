@@ -7,7 +7,7 @@ class Node:
 		self.value = value 
 		self.next = None
 
-
+#hash implement
 class HashTable: 
 	def __init__(self, capacity): 
 		self.capacity = capacity 
@@ -74,16 +74,16 @@ class HashTable:
 			return True
 		except KeyError: 
 			return False
-		
-def search1(url,id):
+#hash implement end	
+
+
+def search1(url,id):#prieks ksenukai/1alv
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
-
 		product_sections = soup.select("div.catalog-taxons-product")
-		print(f"Found {len(product_sections)} products")
 
 		product_data = []
 		for block in product_sections:
@@ -91,22 +91,20 @@ def search1(url,id):
 			if gtm_div:
 				name = gtm_div.get("data-name")
 				price = gtm_div.get("data-price")
-				print(f"{name} - {price}€")
+				print(f"{name} - {price}€")#PRINTE NOFORMATETOS DATUS 
 				product_data.append([name, price])
 		print()
-		print(product_data)
+		print(product_data)#NEAPSTRADATIE DATI
 
 
 
-def search2(url,id):
+def search2(url,id):#ja amazon/lego izmanto savadaku formatu
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
-
 		product_sections = soup.select("div.catalog-taxons-product")
-		print(f"Found {len(product_sections)} products")
 
 		product_data = []
 		for block in product_sections:
@@ -114,16 +112,17 @@ def search2(url,id):
 			if gtm_div:
 				name = gtm_div.get("data-name")
 				price = gtm_div.get("data-price")
-				print(f"{name} - {price}€")
+				print(f"{name} - {price}€")#PRINTE NOFORMATETOS DATUS 
 				product_data.append([name, price])
 		print()
-		print(product_data)
+		print(product_data)#NEAPSTRADATIE DATI
 
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
 }
 
+#izmantojamie url meklesana
 url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"
 url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
 url3 = ""
