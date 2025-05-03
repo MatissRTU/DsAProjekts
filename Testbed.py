@@ -29,17 +29,26 @@ if page.status_code == 200:
         soup = BeautifulSoup(page.content, "html.parser")
         product_sections = soup.select("div.catalog-taxons-product")
 
+        images = soup.find_all('img')
+
         for block in product_sections:
             class_list = block.get("class", [])
             if "catalog-taxons-product--no-product" in class_list:
                 continue
             
             itemdata = block.find("div", class_="gtm-categories")
+            itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
+            img = None#un šito pievienoju
+            if itemimg: #šito arī
+                img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
+
             if itemdata:
                 name = itemdata.get("data-name")
                 price = itemdata.get("data-price")
                 #print(f"{name} - {price}€")  # PRINTE NOFORMATETOS DATUS
-                product_data.append([name, price])
+                product_data.append([name, price, img]) # + ,img
+                
+            
 
     print()
     print(len(product_data))  # temp code
