@@ -5,25 +5,40 @@ url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h
 url = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"  # nepieciešams ksenukajam
 }
 
 page = requests.get(url, headers=headers)
-print(page.status_code)
+print(page.status_code)  # temp code
 
 if page.status_code == 200:
     soup = BeautifulSoup(page.content, "html.parser")
+    pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
+    last_page = int(pagination.text.strip())  # atdala ciparu no elementa
+    print(last_page)  # temp code
 
-    product_sections = soup.select("div.catalog-taxons-product")
-    print(f"Found {len(product_sections)} products")
-
+    #product_sections = soup.select("div.catalog-taxons-product")
     product_data = []
-    for block in product_sections:
-        gtm_div = block.find("div", class_="gtm-categories")
-        if gtm_div:
-            name = gtm_div.get("data-name")
-            price = gtm_div.get("data-price")
-            print(f"{name} - {price}€")
-            product_data.append([name, price])
+
+    for page_number in range(1,last_page+1):
+        search_url = f"https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1&page={page_number}"
+        print(page_number)  # temp code
+        page = requests.get(search_url, headers=headers)
+        print(page.status_code)
+
+        soup = BeautifulSoup(page.content, "html.parser")
+        product_sections = soup.select("div.catalog-taxons-product")
+
+        for block in product_sections:
+            itemdata = block.find("div", class_="gtm-categories")
+            if itemdata:
+                name = itemdata.get("data-name")
+                price = itemdata.get("data-price")
+                #print(f"{name} - {price}€")  # PRINTE NOFORMATETOS DATUS
+                product_data.append([name, price])
+                
     print()
-    print(product_data)
+    print(len(product_data))  # temp code
+    print(product_data[0]) 
+    print(product_data[48])  
+    print(product_data[-1])  # NEAPSTRADATIE DATI
