@@ -21,7 +21,7 @@ if page.status_code == 200:
     product_data = []
 
     for page_number in range(1,last_page+1):
-        search_url = f"https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1&page={page_number}"
+        search_url = f"{url}&page={page_number}"
         print(page_number)  # temp code
         page = requests.get(search_url, headers=headers)
         print(page.status_code)
@@ -30,13 +30,17 @@ if page.status_code == 200:
         product_sections = soup.select("div.catalog-taxons-product")
 
         for block in product_sections:
+            class_list = block.get("class", [])
+            if "catalog-taxons-product--no-product" in class_list:
+                continue
+            
             itemdata = block.find("div", class_="gtm-categories")
             if itemdata:
                 name = itemdata.get("data-name")
                 price = itemdata.get("data-price")
                 #print(f"{name} - {price}€")  # PRINTE NOFORMATETOS DATUS
                 product_data.append([name, price])
-                
+
     print()
     print(len(product_data))  # temp code
     print(product_data[0]) 
