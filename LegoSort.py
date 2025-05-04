@@ -78,23 +78,36 @@ class HashTable:
 
 
 def search1(url,id):#prieks ksenukai/1alv
-	page = requests.get(url, headers=id)
-	print(page.status_code)
 
+	page = requests.get(url, headers=id)
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
-		product_sections = soup.select("div.catalog-taxons-product")
+		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
+		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
 
-		product_data = []
-		for block in product_sections:
-			gtm_div = block.find("div", class_="gtm-categories")
-			if gtm_div:
-				name = gtm_div.get("data-name")
-				price = gtm_div.get("data-price")
-				print(f"{name} - {price}€")#PRINTE NOFORMATETOS DATUS 
-				product_data.append([name, price])
-		print()
-		print(product_data)#NEAPSTRADATIE DATI
+		product_data = HashTable(6000)
+
+		for page_number in range(1,last_page+1):
+			search_url = f"{url}&page={page_number}"
+			page = requests.get(search_url, headers=id)
+
+			soup = BeautifulSoup(page.content, "html.parser")
+			product_sections = soup.select("div.catalog-taxons-product")
+
+			for block in product_sections:
+				class_list = block.get("class", [])#nolasa klases ipasibas
+				if "catalog-taxons-product--no-product" in class_list:#objekts nosaka ka produkts izpardots
+					continue
+            
+				itemdata = block.find("div", class_="gtm-categories")
+				itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
+				img = None#un šito pievienoju
+				if itemimg: #šito arī
+					img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
+				if itemdata:
+					name = itemdata.get("data-name")
+					price = itemdata.get("data-price")
+					product_data.insert(name, {"price": price, "img": img})
 
 
 

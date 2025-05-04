@@ -20,7 +20,7 @@ if page.status_code == 200:
     #product_sections = soup.select("div.catalog-taxons-product")
     product_data = []
 
-    for page_number in range(1,last_page+1):
+    for page_number in range(1,1+1):#TODO replace 1(testcase) with last_page
         search_url = f"{url}&page={page_number}"
         print(page_number)  # temp code
         page = requests.get(search_url, headers=headers)
@@ -28,8 +28,6 @@ if page.status_code == 200:
 
         soup = BeautifulSoup(page.content, "html.parser")
         product_sections = soup.select("div.catalog-taxons-product")
-
-        images = soup.find_all('img')
 
         for block in product_sections:
             class_list = block.get("class", [])
