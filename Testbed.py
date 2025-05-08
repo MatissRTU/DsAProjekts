@@ -17,7 +17,6 @@ if page.status_code == 200:
     last_page = int(pagination.text.strip())  # atdala ciparu no elementa
     print(last_page)  # temp code
 
-    #product_sections = soup.select("div.catalog-taxons-product")
     product_data = []
 
     for page_number in range(1,1+1):#TODO replace 1(testcase) with last_page
@@ -35,16 +34,14 @@ if page.status_code == 200:
                 continue
             
             itemdata = block.find("div", class_="gtm-categories")
-            itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
-            img = None#un šito pievienoju
-            if itemimg: #šito arī
-                img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
+            itemimg = block.find("img", class_="catalog-taxons-product__image")
 
+            if itemimg: 
+                img = itemimg.get("data-src") or itemimg.get("src") 
             if itemdata:
                 name = itemdata.get("data-name")
                 price = itemdata.get("data-price")
-                #print(f"{name} - {price}€")  # PRINTE NOFORMATETOS DATUS
-                product_data.append([name, price, img]) # + ,img
+                product_data.append([name, price, img])
                 
             
 
