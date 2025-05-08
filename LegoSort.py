@@ -75,6 +75,10 @@ class HashTable:
 			return True
 		except KeyError: 
 			return False
+		
+	def filter_price(self, price):
+		pass #TODO deciede will this delete hash items or make the excel from them
+
 #hash implement end	
 
 
@@ -113,7 +117,8 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-				product_data.insert(name, {"price": price, "img": img})
+					index =+ 1
+					product_data.insert(index, {"name": name, "price": float(price), "img": img})
 				#TODO add excel functionality and mayb fix hash insert
 
 
@@ -145,6 +150,8 @@ userid = {
 url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"
 url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
 url3 = ""
+
+index = 0
 
 search1(url1,userid)
 search1(url2,userid)
