@@ -16,15 +16,11 @@ if page.status_code == 200:
     soup = BeautifulSoup(page.content, "html.parser")
     pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
     last_page = int(pagination.text.strip())  # atdala ciparu no elementa
-    print(last_page)  # temp code
-
     product_data = []
 
     for page_number in range(1,1+1):#TODO replace 1(testcase) with last_page
         search_url = f"{url}&page={page_number}"
-        print(page_number)  # temp code
         page = requests.get(search_url, headers=headers)
-        print(page.status_code)
 
         soup = BeautifulSoup(page.content, "html.parser")
         product_sections = soup.select("div.catalog-taxons-product")
@@ -44,22 +40,13 @@ if page.status_code == 200:
             
             itemdata = block.find("div", class_="gtm-categories")
             itemimg = block.find("img", class_="catalog-taxons-product__image")
-            itemimg = block.find("img", class_="catalog-taxons-product__image")
-            img = None
-            if itemimg: 
-                img = itemimg.get("data-src") or itemimg.get("src")
 
             if itemimg: 
                 img = itemimg.get("data-src") or itemimg.get("src") 
             if itemdata:
                 name = itemdata.get("data-name")
                 price = itemdata.get("data-price")
-                product_data.append([name, price, img])
-                
-            
-                #print(f"{name} - {price}€ - {img}")  # PRINTE NOFORMATETOS DATUS
-                product_data.append([name, price, img])
-
+            product_data.append([name, price, img])
             doc.append([name, price, img])
 
     Excel.save("LEGO komplektu akcijas buklets.xlsx") 
