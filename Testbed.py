@@ -29,7 +29,7 @@ if page.status_code == 200:
         #excel dokuments
         Excel = openpyxl.Workbook()
         doc = Excel.active#atver Excel
-        doc.title = "LEGO komplektu akcijas buklets"
+        doc.title = "LEGO komplektu akcijas buklets"#KADEL SIS IR REKURSIVAJA(ES PIEM NEVELOS 2000+excel failus)
 
         doc.append(["Nosaukums","Cena","bilde"])#tabulu nosaukums
 

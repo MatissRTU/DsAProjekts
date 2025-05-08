@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import openpyxl
 
 class Node: 
 	def __init__(self, key, value): 
@@ -87,6 +88,11 @@ def search1(url,id):#prieks ksenukai/1alv
 
 		product_data = HashTable(6000)
 
+		Excel = openpyxl.Workbook()
+		doc = Excel.active#atver Excel
+		doc.title = "LEGO komplektu akcijas buklets"
+		doc.append(["Nosaukums","Cena","bilde"])#tabulu nosaukums
+	
 		for page_number in range(1,last_page+1):
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
@@ -101,14 +107,14 @@ def search1(url,id):#prieks ksenukai/1alv
             
 				itemdata = block.find("div", class_="gtm-categories")
 				itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
-				img = None#un šito pievienoju
-				if itemimg: #šito arī
+
+				if itemimg: 
 					img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					product_data.insert(name, {"price": price, "img": img})
-
+				product_data.insert(name, {"price": price, "img": img})
+				#TODO add excel functionality and mayb fix hash insert
 
 
 def search2(url,id):#ja amazon/lego izmanto savadaku formatu
