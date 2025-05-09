@@ -28,7 +28,10 @@ class HashTable:
 			current = self.table[index] 
 			while current: 
 				if current.key == key: 
-					current.value = value 
+					if isinstance(current.value, list) and isinstance(current.value[0], list):
+						current.value.append(value)
+					else:
+						current.value = [current.value, value]
 					return
 				current = current.next
 			new_node = Node(key, value) 
@@ -76,7 +79,7 @@ class HashTable:
 		except KeyError: 
 			return False
 		
-	def filter_price(self, max_price):
+	def filter_price(self, max_price):#TODO REMOVE WHEN FINISHED WITH REWRITE
 		entries_to_remove = []
 		for bucket in self.table:
 			current = bucket
@@ -105,9 +108,9 @@ def search1(url,id):#prieks ksenukai/1alv
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
 
-		product_data = HashTable(6000)
+		
 	
-		for page_number in range(1,last_page+1):
+		for page_number in range(1,last_page+1):#KAD TESTE last_page samainit ar 1
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
 
@@ -127,8 +130,7 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index =+ 1
-					product_data.insert(index, {"name": name, "price": float(price), "img": img})
+					product_data.insert(float(price,2),[name, img])#FYI LAI PIEKLUTU 
 				#TODO add excel functionality and mayb fix hash insert
 
 
@@ -161,7 +163,12 @@ url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h
 url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
 url3 = ""
 
-index = 0
+product_data = HashTable(6000)
 
-search1(url1,userid)
-search1(url2,userid)
+#search1(url1,userid) TODO FINISH AND UNCOMMENT
+#search1(url2,userid) TODO FINISH AND UNCOMMENT
+
+product_data.insert(1, ["test", "test"])#testa ievade
+print(product_data.search(1))
+product_data.insert(1, ["test1", "test1"])
+print(product_data.search(1))
