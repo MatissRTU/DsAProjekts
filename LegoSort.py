@@ -76,9 +76,24 @@ class HashTable:
 		except KeyError: 
 			return False
 		
-	def filter_price(self, price):
-		pass #TODO deciede will this delete hash items or make the excel from them
+	def filter_price(self, max_price):
+		entries_to_remove = []
+		for bucket in self.table:
+			current = bucket
+			while current:
+				value = current.value
+				price = value.get("price")
+				if isinstance(price, str):
+					try:
+						price = float(price)
+					except ValueError:
+						price = float("inf")
+				if price > max_price:
+					entries_to_remove.append(current.key)
+				current = current.next
 
+		for key in entries_to_remove:
+			self.remove(key)
 #hash implement end	
 
 
