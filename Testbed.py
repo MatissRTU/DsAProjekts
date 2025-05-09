@@ -57,3 +57,4 @@ if page.status_code == 200:
     print(product_data[0]) 
     print(product_data[46])  
     print(product_data[-1])  # NEAPSTRADATIE DATI
+    

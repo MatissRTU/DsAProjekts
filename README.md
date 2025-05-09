@@ -6,14 +6,11 @@ Projekta mērķis ir ievākt datus no dažādiem interneta iepirkšanās veikali
 ## Izmantotās Python bibliotēkas
 * request - lai kods būtu spējīgs atvērt interneta saiti un noslasīt tās datus
 * BeautifulSoup - nepieciešams lai python kods būtu spējīgs pārtūlkot HTML uz pythona valodā lietojamu kodu
-* TavaMamma - Ko citu es darīšu, un pienes cepumus
+* openpyxl - lai strādātu ar Excel
 * u.c. - tiks pievienotas vēlāk, kad tās pievienos 
 
 ## Projekta laikā lietotās datu struktūras
 HashTable
-
-### Un lietotie CSV
-CSV
      
 ## ko ievacam
 Lego komplektu ID, Nosaukums, Cena, Links uz komplektu, ražošanas datums?

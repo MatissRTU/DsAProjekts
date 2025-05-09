@@ -1,3 +1,4 @@
+import openpyxl.workbook
 import requests
 from bs4 import BeautifulSoup
 import openpyxl
@@ -78,13 +79,22 @@ class HashTable:
 		
 	def filter_price(self, price):
 		pass #TODO deciede will this delete hash items or make the excel from them
+	
+	def items(self):
+		for node in self.table:
+			current = node
+			while current:
+				yield current.key, current.value
+				current = current.next
+		
 
 #hash implement end	
 
 
 def search1(url,id):#prieks ksenukai/1alv
-
+    
 	page = requests.get(url, headers=id)
+	index = 0
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
@@ -98,6 +108,7 @@ def search1(url,id):#prieks ksenukai/1alv
 
 			soup = BeautifulSoup(page.content, "html.parser")
 			product_sections = soup.select("div.catalog-taxons-product")
+			print(f"{page_number}/{last_page}")
 
 			for block in product_sections:
 				class_list = block.get("class", [])#nolasa klases ipasibas
@@ -105,17 +116,26 @@ def search1(url,id):#prieks ksenukai/1alv
 					continue
             
 				itemdata = block.find("div", class_="gtm-categories")
-				itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
+				itemimg = block.find("img", class_="catalog-taxons-product__image")
 
 				if itemimg: 
-					img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
+					img = itemimg.get("data-src") or itemimg.get("src")
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index =+ 1
+					index += 1 #es nezinu vai tas bija plānots bet te iepriekš bija index=+ 1 un dēļ tā saglabātās vērtības pārkastija viena otru
 					product_data.insert(index, {"name": name, "price": float(price), "img": img})
-				#TODO add excel functionality and mayb fix hash insert
-
+					
+		Excel = openpyxl.Workbook()
+		doc = Excel.active
+		doc.title = "LEGO komplektu akcijas buklets"
+		doc.append(["Nosaukums", "Cena", "bilde"])
+		for _, item in product_data.items():
+			doc.append([item["name"], item["price"], item["img"]])
+			
+		Excel.save("lego_akcijas.xlsx")
+			
+		#TODO add excel functionality and mayb fix hash insert
 
 def search2(url,id):#ja amazon/lego izmanto savadaku formatu
 	page = requests.get(url, headers=id)
