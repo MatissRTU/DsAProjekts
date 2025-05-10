@@ -1,3 +1,4 @@
+
 import requests
 from bs4 import BeautifulSoup
 import openpyxl
@@ -28,7 +29,10 @@ class HashTable:
 			current = self.table[index] 
 			while current: 
 				if current.key == key: 
-					current.value = value 
+					if isinstance(current.value, list) and isinstance(current.value[0], list):
+						current.value.append(value)
+					else:
+						current.value = [current.value, value]
 					return
 				current = current.next
 			new_node = Node(key, value) 
@@ -76,32 +80,36 @@ class HashTable:
 		except KeyError: 
 			return False
 		
-	def filter_price(self, price):
-		pass #TODO deciede will this delete hash items or make the excel from them
-	
-	def items(self):
-		for node in self.table:
-			current = node
+	def filter_price(self, max_price):#TODO REMOVE WHEN FINISHED WITH REWRITE
+		entries_to_remove = []
+		for bucket in self.table:
+			current = bucket
 			while current:
-				yield current.key, current.value
+				value = current.value
+				price = value.get("price")
+				if isinstance(price, str):
+					try:
+						price = float(price)
+					except ValueError:
+						price = float("inf")
+				if price > max_price:
+					entries_to_remove.append(current.key)
 				current = current.next
-		
 
+		for key in entries_to_remove:
+			self.remove(key)
 #hash implement end	
 
 
 def search1(url,id):#prieks ksenukai/1alv
-    
+
 	page = requests.get(url, headers=id)
-	index = 0
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
-
-		product_data = HashTable(6000)
 	
-		for page_number in range(1,last_page+1):
+		for page_number in range(1,last_page+1):#KAD TESTE last_page samainit ar 1
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
 
@@ -122,19 +130,10 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index += 1 #es nezinu vai tas bija plānots bet te iepriekš bija index=+ 1 un dēļ tā saglabātās vērtības pārkastija viena otru
-					product_data.insert(index, {"name": name, "price": float(price), "img": img})
-					
-		Excel = openpyxl.Workbook()
-		doc = Excel.active
-		doc.title = "LEGO komplektu akcijas buklets"
-		doc.append(["Nosaukums", "Cena", "bilde"])
-		for _, item in product_data.items():
-			doc.append([item["name"], item["price"], item["img"]])
-			
-		Excel.save("lego_akcijas.xlsx")
+					index =+ 1
+					product_data.insert(float(price),[name, img])
 
-def search2(url,id):#amazon
+def search2(url,id):# amazon meklētājs
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 
@@ -153,17 +152,73 @@ def search2(url,id):#amazon
 		print()
 		print(product_data)#NEAPSTRADATIE DATI
 
+def sort_to_excel(price_range):
+	
+	Excel = openpyxl.Workbook()
+	doc = Excel.active#atver Excel
+	doc.title = "LEGO komplektu akcijas buklets" 
+	doc.append(["Nosaukums","Cena","bilde"])
+	### SEIT VEIKT FILTRESANU
+
+	ranges = {
+        	"25": (5, 25),
+        	"50": (25, 50),
+        	"100": (50, 100),
+        	"200": (100, 200),
+        	"200+": (200, float("inf"))
+   	}
+	
+	min_price, max_price = ranges[price_range]
+	
+	keys_to_remove = set()
+	for bucket in product_data.table:
+		current = bucket
+		while current:
+			key = current.key
+			try:
+				price = float(key)
+				if price < min_price or price > max_price:
+					keys_to_remove.add(key)
+			except (ValueError, TypeError):
+				keys_to_remove.add(key)
+			current = current.next
+		
+		for key in keys_to_remove:
+			try:
+				product_data.remove(key)
+			except KeyError:
+				pass
+
+	for bucket in product_data.table:
+		current = bucket
+		while current:
+			value = current.value
+			if isinstance(value[0], list):
+				for item in value:
+					doc.append([item[0], current.key, item[1]])
+			else:
+				doc.append([value[0], current.key, value[1]])
+			current = current.next
+
+
+	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
 }
 
 #izmantojamie url meklesana
-url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"
-url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
-url3 = "www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
+url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                           |
+url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #                                     V rekur ir lapaspuses cipars
+url3 = "https://www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
 
-index = 0
+product_data = HashTable(6000)
 
-search1(url1,userid)
-search1(url2,userid)
+search1(url1,userid) #TODO FINISH AND UNCOMMENT
+sort_to_excel("200+") #šitas ir tas kas nosaka pēc kuras vērtības skatās
+#search1(url2,userid) TODO FINISH AND UNCOMMENT
+
+product_data.insert(1, ["test", "test"])#testa ievade
+print(product_data.search(1))
+product_data.insert(1, ["test1", "test1"])
+print(product_data.search(1))
