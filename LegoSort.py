@@ -106,7 +106,7 @@ def search1(url,id):#prieks ksenukai/1alv
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
 
 		product_data = HashTable(6000)
-	
+
 		for page_number in range(1,last_page+1):
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
