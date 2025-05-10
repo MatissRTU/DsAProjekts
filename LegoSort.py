@@ -28,7 +28,10 @@ class HashTable:
 			current = self.table[index] 
 			while current: 
 				if current.key == key: 
-					current.value = value 
+					if isinstance(current.value, list) and isinstance(current.value[0], list):
+						current.value.append(value)
+					else:
+						current.value = [current.value, value]
 					return
 				current = current.next
 			new_node = Node(key, value) 
@@ -76,7 +79,7 @@ class HashTable:
 		except KeyError: 
 			return False
 		
-	def filter_price(self, max_price):
+	def filter_price(self, max_price):#TODO REMOVE WHEN FINISHED WITH REWRITE
 		entries_to_remove = []
 		for bucket in self.table:
 			current = bucket
@@ -104,10 +107,8 @@ def search1(url,id):#prieks ksenukai/1alv
 		soup = BeautifulSoup(page.content, "html.parser")
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
-
-		product_data = HashTable(6000)
-
-		for page_number in range(1,last_page+1):
+	
+		for page_number in range(1,last_page+1):#KAD TESTE last_page samainit ar 1
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
 
@@ -130,7 +131,7 @@ def search1(url,id):#prieks ksenukai/1alv
 					index =+ 1
 					product_data.insert(float(price,2),[name, img])
 
-def search2(url,id):#ja amazon/lego izmanto savadaku formatu
+def search2(url,id):# amazon meklētājs
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 
@@ -164,11 +165,16 @@ userid = {
 }
 
 #izmantojamie url meklesana
-url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"
-url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"
-url3 = ""
+url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                  |
+url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #                            V rekur ir lapaspuses cipars
+url3 = "www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
 
-index = 0
+product_data = HashTable(6000)
 
-search1(url1,userid)
-search1(url2,userid)
+#search1(url1,userid) TODO FINISH AND UNCOMMENT
+#search1(url2,userid) TODO FINISH AND UNCOMMENT
+
+product_data.insert(1, ["test", "test"])#testa ievade
+print(product_data.search(1))
+product_data.insert(1, ["test1", "test1"])
+print(product_data.search(1))
