@@ -134,10 +134,8 @@ def search1(url,id):#prieks ksenukai/1alv
 			doc.append([item["name"], item["price"], item["img"]])
 			
 		Excel.save("lego_akcijas.xlsx")
-			
-		#TODO add excel functionality and mayb fix hash insert
 
-def search2(url,id):#ja amazon/lego izmanto savadaku formatu
+def search2(url,id):#amazon
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 

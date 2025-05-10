@@ -121,10 +121,10 @@ def search1(url,id):#prieks ksenukai/1alv
 					continue
             
 				itemdata = block.find("div", class_="gtm-categories")
-				itemimg = block.find("img", class_="catalog-taxons-product__image")#es šito
+				itemimg = block.find("img", class_="catalog-taxons-product__image")
 
 				if itemimg: 
-					img = itemimg.get("data-src") or itemimg.get("src") #un vel šito ja tas svarīg(kad izlasi šo vari izdzēst, tas tā lai vieglāk atrast ko es pievienoju)
+					img = itemimg.get("data-src") or itemimg.get("src")
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
@@ -156,7 +156,7 @@ def sort_to_excel(price_range):
 	doc.title = "LEGO komplektu akcijas buklets" 
 	doc.append(["Nosaukums","Cena","bilde"])
 	### SEIT VEIKT FILTRESANU
-	
+
 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
