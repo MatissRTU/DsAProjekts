@@ -130,8 +130,7 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					product_data.insert(float(price,2),[name, img])#FYI LAI PIEKLUTU 
-				#TODO add excel functionality and mayb fix hash insert
+					product_data.insert(float(price,2),[name, img])#saglaba ka array
 
 
 def search2(url,id):#ja amazon/lego izmanto savadaku formatu
@@ -153,6 +152,15 @@ def search2(url,id):#ja amazon/lego izmanto savadaku formatu
 		print()
 		print(product_data)#NEAPSTRADATIE DATI
 
+def sort_to_excel(price_range):
+	Excel = openpyxl.Workbook()
+	doc = Excel.active#atver Excel
+	doc.title = "LEGO komplektu akcijas buklets" 
+	doc.append(["Nosaukums","Cena","bilde"])
+	### SEIT VEIKT FILTRESANU
+	
+
+	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
