@@ -131,7 +131,7 @@ def search1(url,id):#prieks ksenukai/1alv
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
 					index =+ 1
-					product_data.insert(float(price),[name, img])
+					itemdata.insert(float(price),[name, img])
 
 def search2(url,id):# amazon meklētājs
 	page = requests.get(url, headers=id)
@@ -141,18 +141,18 @@ def search2(url,id):# amazon meklētājs
 		soup = BeautifulSoup(page.content, "html.parser")
 		product_sections = soup.select("div.catalog-taxons-product")
 
-		product_data = []
+		itemdata = []
 		for block in product_sections:
 			gtm_div = block.find("div", class_="gtm-categories")
 			if gtm_div:
 				name = gtm_div.get("data-name")
 				price = gtm_div.get("data-price")
 				print(f"{name} - {price}€")#PRINTE NOFORMATETOS DATUS 
-				product_data.append([name, price])
+				itemdata.append([name, price])
 		print()
-		print(product_data)#NEAPSTRADATIE DATI
+		print(itemdata)#NEAPSTRADATIE DATI
 
-def sort_to_excel(price_range):
+def sortExcel(price_range):
 	
 	Excel = openpyxl.Workbook()
 	doc = Excel.active#atver Excel
@@ -171,7 +171,7 @@ def sort_to_excel(price_range):
 	min_price, max_price = ranges[price_range]
 	
 	keys_to_remove = set()
-	for bucket in product_data.table:
+	for bucket in itemdata.table:
 		current = bucket
 		while current:
 			key = current.key
@@ -185,11 +185,11 @@ def sort_to_excel(price_range):
 		
 		for key in keys_to_remove:
 			try:
-				product_data.remove(key)
+				itemdata.remove(key)
 			except KeyError:
 				pass
 
-	for bucket in product_data.table:
+	for bucket in itemdata.table:
 		current = bucket
 		while current:
 			value = current.value
@@ -203,22 +203,26 @@ def sort_to_excel(price_range):
 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
-userid = {
+userid1 = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
+}
+userid2 = {
+	"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
 }
 
 #izmantojamie url meklesana
-url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                           |
-url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #                                     V rekur ir lapaspuses cipars
-url3 = "https://www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
+url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"
+url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" 
+url3 = "https://www.amazon.de/s?k=lego&i=toys&rh=n%3A12950651%2Cp_123%3A249943&dc&page=1&language=en&qid=1746980694&rnid=91049101031&xpid=D6Gb0ahu6t-Q5&ref=sr_pg_1"
 
-product_data = HashTable(6000)
+itemdata = HashTable(6000)
 
-search1(url1,userid) #TODO FINISH AND UNCOMMENT
-sort_to_excel("200+") #šitas ir tas kas nosaka pēc kuras vērtības skatās
-#search1(url2,userid) TODO FINISH AND UNCOMMENT
+#search1(url1,userid) #TODO FINISH AND UNCOMMENT
+#search1(url2,userid) #TODO FINISH AND UNCOMMEET
+search2(url3,userid1)
+#sortExcel("50") #šitas ir tas kas nosaka pēc kuras vērtības skatās
 
-product_data.insert(1, ["test", "test"])#testa ievade
-print(product_data.search(1))
-product_data.insert(1, ["test1", "test1"])
-print(product_data.search(1))
+itemdata.insert(1, ["test", "test"])#testa ievade
+print(itemdata.search(1))
+itemdata.insert(1, ["test1", "test1"])
+print(itemdata.search(1))
