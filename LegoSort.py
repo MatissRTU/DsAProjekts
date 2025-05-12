@@ -150,10 +150,10 @@ def sort_to_excel(price_range):
 			if isinstance(value[0], list):  # multiple products at the same price
 				for entry in value:
 					name, img = entry
-					doc.append([name, f"{price:.2f}€", img])
+					doc.append([name, f"{price}€", img])
 			else:
 				name, img = value
-				doc.append([name, f"{price:.2f}€", img])
+				doc.append([name, f"{price}€", img])
 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
@@ -181,7 +181,10 @@ print(product_data.search(1))
 
 page = requests.get(url4, headers=userid)
 print(page.status_code)
-#            _
+tester = input("test")
+sort_to_excel(tester)
+# ~~~~~~~~~~~~~~~~~~	
+#           _
 #       .__(.)< (MEOW)
 #        \___)   
 # ~~~~~~~~~~~~~~~~~~-->
