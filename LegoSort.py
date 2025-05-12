@@ -160,6 +160,7 @@ def sort_to_excel(price_range):
 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
+
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
 }
@@ -168,17 +169,21 @@ userid = {
 url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                           |
 url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #                                     V rekur ir lapaspuses cipars
 url3 = "https://www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
+url4= "https://www.lego.com/en-lv/categories/sales-and-deals"
 
 product_data = HashTable(6000)
 
 #search1(url1,userid) TODO FINISH AND UNCOMMENT
 #search1(url2,userid) TODO FINISH AND UNCOMMENT
-
+'''
 product_data.insert(1, ["test", "test"])#testa ievade
 print(product_data.search(1))
 product_data.insert(1, ["test1", "test1"])
 print(product_data.search(1))
+'''
 
+page = requests.get(url4, headers=userid)
+print(page.status_code)
 #            _
 #       .__(.)< (MEOW)
 #        \___)   
