@@ -78,25 +78,13 @@ class HashTable:
 			return True
 		except KeyError: 
 			return False
-		
-	def filter_price(self, max_price):#TODO REMOVE WHEN FINISHED WITH REWRITE
-		entries_to_remove = []
-		for bucket in self.table:
-			current = bucket
+	
+	def items(self):
+		for node in self.table:
+			current = node
 			while current:
-				value = current.value
-				price = value.get("price")
-				if isinstance(price, str):
-					try:
-						price = float(price)
-					except ValueError:
-						price = float("inf")
-				if price > max_price:
-					entries_to_remove.append(current.key)
+				yield current.key, current.value
 				current = current.next
-
-		for key in entries_to_remove:
-			self.remove(key)
 #hash implement end	
 
 
@@ -131,7 +119,7 @@ def search1(url,id):#prieks ksenukai/1alv
 					index =+ 1
 					product_data.insert(float(price,2),[name, img])
 
-def search2(url,id):# amazon meklētājs
+def search2(url,id):# amazon meklētājs TODO remake to 220lv
 	page = requests.get(url, headers=id)
 	print(page.status_code)
 
@@ -157,6 +145,15 @@ def sort_to_excel(price_range):
 	doc.append(["Nosaukums","Cena","bilde"])
 	### SEIT VEIKT FILTRESANU
 
+	for price, value in product_data.items():
+		if price <= price_range:
+			if isinstance(value[0], list):  # multiple products at the same price
+				for entry in value:
+					name, img = entry
+					doc.append([name, f"{price:.2f}€", img])
+			else:
+				name, img = value
+				doc.append([name, f"{price:.2f}€", img])
 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
