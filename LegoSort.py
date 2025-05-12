@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import openpyxl
+from openpyxl.drawing.image import Image
 
 class Node: 
 	def __init__(self, key, value): 
@@ -89,7 +90,8 @@ def search1(url,id):#prieks ksenukai/1alv
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
 	
-		for page_number in range(1,last_page+1):#KAD TESTE last_page samainit ar 1
+		for page_number in range(1,1+1):#TODO KAD TESTE last_page samainit ar 1
+			print(f"Searching({page_number}/{last_page})...")
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
 
@@ -110,7 +112,7 @@ def search1(url,id):#prieks ksenukai/1alv
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
 					index =+ 1
-					product_data.insert(float(price,2),[name, img])
+					product_data.insert(float(price),[name, img])
 
 def search2(url,id):# amazon meklētājs TODO remake to 220lv
 	page = requests.get(url, headers=id)
@@ -135,7 +137,7 @@ def sort_to_excel(price_range):
 	Excel = openpyxl.Workbook()
 	doc = Excel.active#atver Excel
 	doc.title = "LEGO komplektu akcijas buklets" 
-	doc.append(["Nosaukums","Cena","bilde"])
+	doc.append(["Nosaukums","Cena","Bilde"])
 	### SEIT VEIKT FILTRESANU
 
 	for block in product_data.table:
@@ -145,9 +147,13 @@ def sort_to_excel(price_range):
 			if key < price_range:
 				value = current.value
 				if isinstance(value[0], list):
-					doc.extend([[item[0], current.key, f'=image("{item[1]}")'] for item in value])
+					for item in value:
+						doc.append([item[0], current.key, f'=IMAGE("{item[1]}")'])#TODO SALABOT IMAGE parvietojot linku uz nakamo rindu un refrencojot uz to 
+
 				else:
-					doc.append([value[0], current.key, f'=image("{value[1]}")'])
+					doc.append([value[0], current.key, f'=IMAGE("{value[1]}")'])
+
+					
 			current = current.next
 
 
@@ -167,8 +173,8 @@ url4= "https://www.lego.com/en-lv/categories/sales-and-deals"
 
 product_data = HashTable(6000)
 
-#search1(url1,userid) TODO FINISH AND UNCOMMENT
-#search1(url2,userid) TODO FINISH AND UNCOMMENT
+search1(url1,userid) #TODO FINISH AND UNCOMMENT
+#search1(url2,userid) #TODO FINISH AND UNCOMMENT
 '''
 product_data.insert(1, ["test", "test"])#testa ievade
 print(product_data.search(1))
@@ -178,8 +184,8 @@ print(product_data.search(1))
 
 page = requests.get(url4, headers=userid)
 print(page.status_code)
-tester = input("test")
-sort_to_excel(tester)
+tester = input("test value: ")
+sort_to_excel(float(tester))
 # ~~~~~~~~~~~~~~~~~~	
 #           _
 #       .__(.)< (MEOW)
