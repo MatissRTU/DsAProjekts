@@ -78,13 +78,6 @@ class HashTable:
 			return True
 		except KeyError: 
 			return False
-	
-	def items(self):
-		for node in self.table:
-			current = node
-			while current:
-				yield current.key, current.value
-				current = current.next
 #hash implement end	
 
 
@@ -145,16 +138,20 @@ def sort_to_excel(price_range):
 	doc.append(["Nosaukums","Cena","bilde"])
 	### SEIT VEIKT FILTRESANU
 
-	for price, value in product_data.items():
-		if price <= price_range:
-			if isinstance(value[0], list):  # multiple products at the same price
-				for entry in value:
-					name, img = entry
-					doc.append([name, f"{price}€", img])
-			else:
-				name, img = value
-				doc.append([name, f"{price}€", img])
+	for block in product_data.table:
+		current = block
+		while current:
+			key = current.key
+			if key < price_range:
+				value = current.value
+				if isinstance(value[0], list):
+					doc.extend([[item[0], current.key, f'=image("{item[1]}")'] for item in value])
+				else:
+					doc.append([value[0], current.key, f'=image("{value[1]}")'])
+			current = current.next
 
+
+	#=image("{img}") 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
 

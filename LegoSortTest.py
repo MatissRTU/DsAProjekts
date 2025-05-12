@@ -200,7 +200,7 @@ def sortExcel(price_range):
 				doc.append([value[0], current.key, value[1]])
 			current = current.next
 
-
+	#=image("{img}") 
 	Excel.save("LEGO komplektu akcijas buklets.xlsx")
 
 userid1 = {
