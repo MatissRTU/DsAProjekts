@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import openpyxl
-from openpyxl.drawing.image import Image
 
 class Node: 
 	def __init__(self, key, value): 
