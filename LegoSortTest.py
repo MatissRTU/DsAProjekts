@@ -192,15 +192,7 @@ product_data = HashTable(6000)
 
 search1(url1,userid)#TODO FINISH AND UNCOMMENT
 #search1(url2,userid) #TODO FINISH AND UNCOMMENT
-'''
-product_data.insert(1, ["test", "test"])#testa ievade
-print(product_data.search(1))
-product_data.insert(1, ["test1", "test1"])
-print(product_data.search(1))
-print(f"{page_number}/{last_page}")
 
-tester = input("test")
-'''
 #test_values()
 sort_to_excel(666)
 #page = requests.get(url4,headers=userid)
