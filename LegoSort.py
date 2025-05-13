@@ -143,7 +143,7 @@ def sort_to_excel(price_range):
 		current = block
 		while current:
 			key = current.key
-			if key < price_range:
+			if key <= price_range:
 				value = current.value
 				if isinstance(value[0], list):
 					for item in value:
