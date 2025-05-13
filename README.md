@@ -13,10 +13,13 @@ HashTable, ar modifikāciju vienai atslēgai pievienot papildus vērtības
 
 ## Programmas metodes
 ### search1(url,id)
+Search1 funkcija sākumā pieprasa pieeju iepriekš norādītai saitei un izmanto gatavu user-agent, tad tā pārliecinās vai "page" status ir 200(lapa strādā normāli un no tās var ievākt datus). Izmantojot BeautifulSoup bibliotēku, tiek nolasīti dati no saites lapas, kā piemēram pēdējā lapas puse, kas ļauj ciklēt cauri visām lapām un nolasīt datus par visām precēm(šajā gadījumā LEGO komplektiem). Tiek izprintēts progresa teksts, kas rāda no cik daudz lapaspusēm dati jau ir "noskrāpēti" pret kopējo lapas pušu skaitu. Ievāktie dati tiek sadalīti: "name", "price", "img" mainīgajos, kurus visus pievieno HashTable, ko vēlāk izmatos sort_to_excel metodei.
 
 ### search2(url,id)
+Search2 funkcijas rezultāts ir tāds pats kā Search1, bet kā līdz tam tika ir atšķirīgas, jo abiem interneta veikaliem bija atšķirīgas html sistēmas uzbūves un klašu nosaukumi, kā arī pat URL bija atšķirīgi, teiksim tā ja diviem interneta veikaliem ir atšķirīga html veidne, tad arī search funkcija ir jāpielāgo. Tātad, īss apkopojums, pieprasa pieeju saitei, izveido ciklu, kas iziet cauri visām lapaspusēm, ievācot trīs lietas par LEGO komplektiem, un šos datus noglabā HashTable.
 
 ### sort_to_excel(price_range)
+Sort_to_Excel funkcija sāk ar Excel atvēršanu, izveido jaunu excel failu, kuram pievieno trīs tabulas "Nosaukums", "Cena", "Bilde" tad noformē kolonnu izmērus un tad ciklā kura garumu nosaka to cik daudz produkti ir saglabāti HashTable tiek sākti dalīt pēc iepriekš izvēlētas maksimālās cenas, un tikai tās cenas kuras ir zem vai vienādi ar norādīto vērtību tiks pievienotas Excel failam, automātiski tiek noformēta katra rinda, kad tajā ievieto datus. Excel failā arī ir redzamas bildes katram komplektam, bet tā kā  bildes ir URL links nevis reālas bildes Excel kopējais izmērs ir mazs, visbeidzot Excel failu saglabā kā: "Lego_akcijas.xlsx" 
 
 ## Kad izmantot programmu
 Programma galvenokārt domāta lego komplektu atlaižu meklēšanai, bet ar minimālām modifikācijām to var izmantot projekta mērķa mājaslapās citām precēm(1a.lv gadījumā arī ksenukai.lv)

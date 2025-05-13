@@ -86,7 +86,7 @@ class HashTable:
 #        \___)   
 # ~~~~~~~~~~~~~~~~~~
 
-def search1(url,id):#prieks ksenukai/1alv
+def search1(url,id):#prieks 1alv
 	page = requests.get(url, headers=id)
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
