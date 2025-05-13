@@ -139,11 +139,11 @@ def sort_to_excel(price_range):
 	doc.append(["Nosaukums","Cena","Bilde","Attēlu URL"])
 	### SEIT VEIKT FILTRESANU
 	row_counter =2
-	#format colums
+
 	doc.column_dimensions['A'].width = 30  # Name
 	doc.column_dimensions['B'].width = 10  # Price
-	doc.column_dimensions['C'].width = 18  # Image 
-	doc.column_dimensions['D'].width = 18  # Image URL
+	doc.column_dimensions['C'].width = 18  # Image URL (just for reference)
+	doc.column_dimensions['D'].width = 18  # Image display column
 
 	for block in product_data.table:
 		current = block
@@ -154,18 +154,16 @@ def sort_to_excel(price_range):
 				if isinstance(value, list) and all(isinstance(i, list) and len(i) == 2 for i in value):
 					for item in value:
 						name, url = item
-						doc.append([name, key, f'=IMAGE(D{row_counter}, "", 3, 100, 100)', url])
-						doc.row_dimensions[row_counter].height = 75
+						doc.append([name, key, f"=IMAGE(D{row_counter})", url])
+						doc.row_dimensions[row_counter].height = 75  # Set cell height for image
 						row_counter += 1
 
                 # Handle a single [name, url] entry
-				elif isinstance(value, list) and len(value) == 2 and all(isinstance(i, str) for i in value):
+				else:
 					name, url = value
-					doc.append([name, key, f'=IMAGE(D{row_counter}, "", 3, 100, 100)', url])
+					doc.append([name, key, f"=IMAGE(D{row_counter})", url])
 					doc.row_dimensions[row_counter].height = 75
 					row_counter += 1
-				else:
-					print(f"Unexpected data format at key {key}: {value}")
             
 			current = current.next
 	
@@ -204,12 +202,6 @@ print(f"{page_number}/{last_page}")
 tester = input("test")
 '''
 #test_values()
-sort_to_excel(50)
+sort_to_excel(666)
 #page = requests.get(url4,headers=userid)
 #print(page.status_code)
-
-# ~~~~~~~~~~~~~~~~~~	
-#           														  _
-#       .____________________________________________________________(.)< (WOOF)
-#        \_____________________________________________________________)   
-# ~~~~~~~~~~~~~~~~~~-->
