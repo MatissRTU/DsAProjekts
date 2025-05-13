@@ -109,7 +109,6 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index =+ 1
 					product_data.insert(round(float(price),2),[name, img])
 
 def search2(url,id):# amazon meklētājs TODO remake to 220lv
