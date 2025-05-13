@@ -18,8 +18,8 @@ HashTable, ar modifikāciju vienai atslēgai pievienot papildus vērtības
 
 ### sort_to_excel(price_range)
 
-## Kā izmantot programmu
-
+## Kad izmantot programmu
+Programma galvenokārt domāta lego komplektu atlaižu meklēšanai, bet ar minimālām modifikācijām to var izmantot projekta mērķa mājaslapās citām precēm(1a.lv gadījumā arī ksenukai.lv)
 
 ## Lietošanas pamācība
 1. novieto python failu mapē kurā vēlas dabūt excel failu.
