@@ -154,15 +154,15 @@ def sort_to_excel(price_range):
 				if isinstance(value, list) and all(isinstance(i, list) and len(i) == 2 for i in value):
 					for item in value:
 						name, url = item
-						doc.append([name, key, f"=IMAGE(D{row_counter})", url])
-						doc.row_dimensions[row_counter].height = 75  # Set cell height for image
+						doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
+						doc.row_dimensions[doc.max_row].height = 100  # Set cell height for image
 						row_counter += 1
 
                 # Handle a single [name, url] entry
 				else:
 					name, url = value
-					doc.append([name, key, f"=IMAGE(D{row_counter})", url])
-					doc.row_dimensions[row_counter].height = 75
+					doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
+					doc.row_dimensions[doc.max_row].height = 100
 					row_counter += 1
             
 			current = current.next
