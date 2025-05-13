@@ -136,8 +136,13 @@ def sort_to_excel(price_range):
 	Excel = openpyxl.Workbook()
 	doc = Excel.active#atver Excel
 	doc.title = "LEGO komplektu akcijas buklets" 
-	doc.append(["Nosaukums","Cena","bilde"])
+	doc.append(["Nosaukums","Cena","Bilde","Attēlu URL"])
 	### SEIT VEIKT FILTRESANU
+
+	doc.column_dimensions['A'].width = 30  # Name
+	doc.column_dimensions['B'].width = 10  # Price
+	doc.column_dimensions['C'].width = 18  # Image URL (just for reference)
+	doc.column_dimensions['D'].width = 18  # Image display column
 
 	for block in product_data.table:
 		current = block
@@ -145,17 +150,23 @@ def sort_to_excel(price_range):
 			key = current.key
 			if key <= price_range:
 				value = current.value
-				if isinstance(value[0], list):
+				if isinstance(value, list) and all(isinstance(i, list) and len(i) == 2 for i in value):
 					for item in value:
-						doc.append([item[0], current.key, f'=IMAGE("{item[1]}")'])#TODO SALABOT IMAGE parvietojot linku uz nakamo rindu un refrencojot uz to 
+						name, url = item
+						doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
+						doc.row_dimensions[doc.max_row].height = 100  # Set cell height for image
+
+                # Handle a single [name, url] entry
 				else:
-					doc.append([value[0], current.key, f'=image("{value[1]}")'])
+					name, url = value
+					doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
+					doc.row_dimensions[doc.max_row].height = 100
+
+            
 			current = current.next
-
-
-	#=image("{img}") 
-	Excel.save("LEGO komplektu akcijas buklets.xlsx")
-
+	
+	Excel.save("Lego_akcijas.xlsx")
+	print("File has been saved as Lego_akcijas.xlsx")
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam

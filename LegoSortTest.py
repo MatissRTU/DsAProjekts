@@ -138,7 +138,6 @@ def sort_to_excel(price_range):
 	doc.title = "LEGO komplektu akcijas buklets" 
 	doc.append(["Nosaukums","Cena","Bilde","Attēlu URL"])
 	### SEIT VEIKT FILTRESANU
-	row_counter =2
 
 	doc.column_dimensions['A'].width = 30  # Name
 	doc.column_dimensions['B'].width = 10  # Price
@@ -156,19 +155,18 @@ def sort_to_excel(price_range):
 						name, url = item
 						doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
 						doc.row_dimensions[doc.max_row].height = 100  # Set cell height for image
-						row_counter += 1
 
                 # Handle a single [name, url] entry
 				else:
 					name, url = value
 					doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
 					doc.row_dimensions[doc.max_row].height = 100
-					row_counter += 1
+
             
 			current = current.next
 	
 	Excel.save("Lego_akcijas.xlsx")
-	print("Excel save complete")
+	print("File has been saved as Lego_akcijas.xlsx")
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
