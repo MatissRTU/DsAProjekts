@@ -198,7 +198,7 @@ url4= "https://www.lego.com/en-lv/categories/sales-and-deals"
 
 product_data = HashTable(5000)
 
-print("Sākam meklēšanu 1A.lv...")
+print("Sākta meklēšana 1A.lv...")
 search1(url1,userid) #TODO FINISH AND UNCOMMENT
 
 #search1(url2,userid) #TODO FINISH AND UNCOMMENT
