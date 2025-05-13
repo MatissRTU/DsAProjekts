@@ -1,6 +1,6 @@
 # DS&A Projekts: LEGO komplektu atlaižu apkopotājs
 ## Projekta uzdevums
-Projekta mērķis ir ievākt datus no dažādiem interneta iepirkšanās veikaliem (220.lv;1a.lv). Dati tiks ievākti no akciju/atlaižu katalogiem, kurus saglabās modificētā hashmap kam par atslēgu būs produkta cena, un tajā glabāsies pārējā komplekta informācija (Nosaukums,produkta bilde), ko pēc tam, apstrādājot ar cenas filtru, 
+Projekta mērķis ir ievākt datus no dažādiem interneta iepirkšanās veikaliem (m79.lv;1a.lv). Dati tiks ievākti no akciju/atlaižu katalogiem, kurus saglabās modificētā hashmap kam par atslēgu būs produkta cena, un tajā glabāsies pārējā komplekta informācija (Nosaukums,produkta bilde), ko pēc tam, apstrādājot ar cenas filtru, 
 izvadīs excel formātā.
 
 ## Izmantotās Python bibliotēkas

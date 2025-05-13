@@ -124,49 +124,38 @@ def search2(url,id):# TODO remake to 220lv
             break
         print("test1")   ######     
         soup = BeautifulSoup(response.text, "html.parser")
-        items_container = soup.find(class_="items")
-        if not items_container:
-            print("Nav atrasts nevienas preces")
+        items = soup.find_all("div", class_="item")
+        if len(items) == 0:
+            print("No items found. Stopping search.")
             break
+
         print("test2") ######  
-        rows = items_container.find_all("div", class_="row")
-        found_any_item = False
-        print("test3")#######
-        for row in rows:
-            print(f"Searching row {page}...")
-            items = row.find_all("div", class_="item")
-            if not items:
-                continue
-            found_any_item = True
-            for item in items:
-                print(f"Searching item {page}...")
-                # Extract image
-                img_tag = item.find("img")
-                image_link = img_tag['src'] if img_tag else None
+        for item in items:
+            print(f"Searching item in page {page}...")  # Debug: Should print this for each item
+            # Extract image
+            img_tag = item.find("img")
+            image_link = img_tag['src'] if img_tag else None
 
-                # Try to get product name (fallback to alt text or empty string)
-                name = img_tag.get("alt") if img_tag and img_tag.has_attr("alt") else "No Name"
+            # Try to get product name (fallback to alt text or empty string)
+            name = img_tag.get("alt") if img_tag and img_tag.has_attr("alt") else "No Name"
 
-                # Get price and value
-                price_block = item.find(class_="price")
-                price = None
+            # Get price and value
+            price_block = item.find(class_="price")
+            price = None
 
-                if price_block:
-                    print(f"Searching price {page}...")
-                    price_tag = price_block.find("b", itemprop="price")
-                    if price_tag:
-                        try:
-                            price = float(price_tag.text.strip().replace(",", "."))
-                        except ValueError:
-                            continue  # skip if price isn't a valid number
-                print("10toes")############
-                if image_link and price is not None:
-                    print(f"Name: {name}, Price: {price}, Image: {image_link}")
-                    product_data.insert(round(price, 2), [name, image_link])
-        print("test4")########
-        if not found_any_item:
-            print("Test5")#######
-            break
+            if price_block:
+                print(f"Searching price in item {page}...")  # Debug: Should print this when price block found
+                price_tag = price_block.find("b", itemprop="price")
+                span_tag = price_block.find("span")
+                if price_tag and span_tag:
+                    try:
+                        price = float(price_tag.text.strip().replace(",", "."))
+                    except ValueError:
+                        continue  # skip if price isn't a valid number
+
+            if image_link and price is not None:
+                print(f"Name: {name}, Price: {price}, Image: {image_link}")
+                product_data.insert(round(price, 2), [name, image_link])
 
         page += 1
 

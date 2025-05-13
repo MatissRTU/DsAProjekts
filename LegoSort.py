@@ -116,35 +116,46 @@ def search1(url,id):#prieks ksenukai/1alv
 					price = itemdata.get("data-price")
 					product_data.insert(round(float(price),2),[name, img])
 
-def search2(url,id):# amazon meklētājs TODO remake to 220lv
-	page = requests.get(url, headers=id)
-	if page.status_code == 200:
-		soup = BeautifulSoup(page.content, "html.parser")
-		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
-		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
-	
-		for page_number in range(1,1+1):#KAD TESTE last_page samainit ar 1
-			search_url = f"{url}&page={page_number}"
-			page = requests.get(search_url, headers=id)
+def search2(url,id):# prieks m79
+    page = 1
 
-			soup = BeautifulSoup(page.content, "html.parser")
-			product_sections = soup.select("div.items")
-			print(f"searching({page_number}/{last_page})...")
+    while True:
+        print(f"Searching page {page}...")
+        page_url = url.replace("/1/", f"/{page}/")
+        response = requests.get(page_url,headers=id)
 
-			for block in product_sections:
-				class_list = block.get("class", [])#nolasa klases ipasibas
-				if "catalog-taxons-product--no-product" in class_list:#objekts nosaka ka produkts izpardots
-					continue
-            
-				itemdata = block.find("div", class_="gtm-categories")
-				itemimg = block.find("img", class_="catalog-taxons-product__image")
+        if response.status_code != 200:
+            print(f"lapai nevar piekļūt, kods:{response.status_code}")
+            break
 
-				if itemimg: 
-					img = itemimg.get("data-src") or itemimg.get("src")
-				if itemdata:
-					name = itemdata.get("data-name")
-					price = itemdata.get("data-price")
-					product_data.insert(round(float(price),2),[name, img])
+        soup = BeautifulSoup(response.text, "html.parser")
+        items = soup.find_all("div", class_="item")
+        if len(items) == 0:
+            print("Beidzas produkti")
+            break
+
+        for item in items:
+            img_tag = item.find("img")
+            image_link = img_tag['src'] if img_tag else None
+
+            name = img_tag.get("alt") if img_tag and img_tag.has_attr("alt") else "No Name"
+
+            price_block = item.find(class_="price")
+            price = None
+
+            if price_block:
+                price_tag = price_block.find("b", itemprop="price")
+                span_tag = price_block.find("span")
+                if price_tag and span_tag:
+                    try:
+                        price = float(price_tag.text.strip().replace(",", "."))
+                    except ValueError:
+                        continue
+
+            if image_link and price is not None:
+                product_data.insert(round(price, 2), [name, image_link])
+
+        page += 1
 
 
 def sort_to_excel(price_range):
@@ -190,20 +201,16 @@ userid = {
 
 #izmantojamie url meklesana
 url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                           |
-url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #                                     V rekur ir lapaspuses cipars
-url3 = "https://www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
-url4= "https://www.lego.com/en-lv/categories/sales-and-deals"
+url2 = "https://m79.lv/rotallietasspeles/lego/1/f:5637150982-5637212832" 
+
 
 product_data = HashTable(5000)
 
 print("Sākta meklēšana 1A.lv...")
-search1(url1,userid) #TODO FINISH AND UNCOMMENT
+#search1(url1,userid)
+print("Sākta meklēšana m79.lv...")
+search2(url2,userid)
 
-#search1(url2,userid) #TODO FINISH AND UNCOMMENT
-
-
-page = requests.get(url4, headers=userid)
-print(page.status_code)
 while True:
 	tester = input("Ievadīt maksimālo cenu vai exit ,lai izslēgtu programmu: ")
 	if tester == "exit":
