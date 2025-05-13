@@ -80,6 +80,11 @@ class HashTable:
 			return False
 #hash implement end	
 
+# ~~~~~~~~~~~~~~~~~~	
+#           _
+#       .__(.)< (MEOW)
+#        \___)   
+# ~~~~~~~~~~~~~~~~~~
 
 def search1(url,id):#prieks ksenukai/1alv
 	page = requests.get(url, headers=id)
@@ -109,10 +114,39 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
+					index =+ 1
 					product_data.insert(round(float(price),2),[name, img])
 
-def search2(url,id):#TODO remake to 220lv
-	pass
+def search2(url,id):# amazon meklētājs TODO remake to 220lv
+	page = requests.get(url, headers=id)
+	if page.status_code == 200:
+		soup = BeautifulSoup(page.content, "html.parser")
+		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
+		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
+	
+		for page_number in range(1,1+1):#KAD TESTE last_page samainit ar 1
+			search_url = f"{url}&page={page_number}"
+			page = requests.get(search_url, headers=id)
+
+			soup = BeautifulSoup(page.content, "html.parser")
+			product_sections = soup.select("div.catalog-taxons-product")
+			print(f"searching({page_number}/{last_page})...")
+
+			for block in product_sections:
+				class_list = block.get("class", [])#nolasa klases ipasibas
+				if "catalog-taxons-product--no-product" in class_list:#objekts nosaka ka produkts izpardots
+					continue
+            
+				itemdata = block.find("div", class_="gtm-categories")
+				itemimg = block.find("img", class_="catalog-taxons-product__image")
+
+				if itemimg: 
+					img = itemimg.get("data-src") or itemimg.get("src")
+				if itemdata:
+					name = itemdata.get("data-name")
+					price = itemdata.get("data-price")
+					index =+ 1
+					product_data.insert(round(float(price),2),[name, img])
 
 
 def sort_to_excel(price_range):
@@ -144,14 +178,14 @@ def sort_to_excel(price_range):
 						name, url = value
 						doc.append([name, f"{key}€", f'=_xlfn.IMAGE("{url}")'])
 						doc.row_dimensions[doc.max_row].height = 100
-
 				current = current.next
 
 		Excel.save("Lego_akcijas.xlsx")
-		print("Fails saglabāts kā Lego_akcijas.xlsx")
+		print("Excel save complete")
 	except Exception:
 		print(f"Fails nav aizvērts, aizvērt to un restartēt programmu")
 
+#Main programmas sakums
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
 }
@@ -162,18 +196,19 @@ url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1" #   
 url3 = "https://www.amazon.de/-/en/s?i=toys&rh=n%3A12950651%2Cp_123%3A249943%2Cp_n_deal_type%3A26902994031&dc&page=1&language=en&qid=1746821762&rnid=26902991031&xpid=bVRkszM2eK61l&ref=sr_pg_1"
 url4= "https://www.lego.com/en-lv/categories/sales-and-deals"
 
-product_data = HashTable(6000)
+product_data = HashTable(5000)
 
+print("Sākam meklēšanu 1A.lv...")
 search1(url1,userid) #TODO FINISH AND UNCOMMENT
+
 #search1(url2,userid) #TODO FINISH AND UNCOMMENT
 
 
 page = requests.get(url4, headers=userid)
 print(page.status_code)
-tester = input("Ievadīt maksimālo cenu: ")
-sort_to_excel(float(tester))
-# ~~~~~~~~~~~~~~~~~~	
-#           _
-#       .__(.)< (MEOW)
-#        \___)   
-# ~~~~~~~~~~~~~~~~~~-->
+while True:
+	tester = input("Ievadīt maksimālo cenu vai exit ,lai izslēgtu programmu: ")
+	if tester == "exit":
+		break
+	else:
+		sort_to_excel(float(tester))
