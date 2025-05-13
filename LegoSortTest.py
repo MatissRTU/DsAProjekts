@@ -82,7 +82,6 @@ class HashTable:
 
 
 def search1(url,id):#prieks ksenukai/1alv
-
 	page = requests.get(url, headers=id)
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
@@ -115,58 +114,72 @@ def search1(url,id):#prieks ksenukai/1alv
 
 def search2(url,id):# amazon meklētājs TODO remake to 220lv
 	page = requests.get(url, headers=id)
-	print(page.status_code)
-
 	if page.status_code == 200:
 		soup = BeautifulSoup(page.content, "html.parser")
-		product_sections = soup.select("div.catalog-taxons-product")
+		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
+		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
+	
+		for page_number in range(1,1+1):#KAD TESTE last_page samainit ar 1
+			search_url = f"{url}&page={page_number}"
+			page = requests.get(search_url, headers=id)
 
-		product_data = []
-		for block in product_sections:
-			gtm_div = block.find("div", class_="gtm-categories")
-			if gtm_div:
-				name = gtm_div.get("data-name")
-				price = gtm_div.get("data-price")
-				print(f"{name} - {price}€")#PRINTE NOFORMATETOS DATUS 
-				product_data.append([name, price])
-		print()
-		print(product_data)#NEAPSTRADATIE DATI
+			soup = BeautifulSoup(page.content, "html.parser")
+			product_sections = soup.select("div.catalog-taxons-product")
+			print(f"searching({page_number}/{last_page})...")
+
+			for block in product_sections:
+				class_list = block.get("class", [])#nolasa klases ipasibas
+				if "catalog-taxons-product--no-product" in class_list:#objekts nosaka ka produkts izpardots
+					continue
+            
+				itemdata = block.find("div", class_="gtm-categories")
+				itemimg = block.find("img", class_="catalog-taxons-product__image")
+
+				if itemimg: 
+					img = itemimg.get("data-src") or itemimg.get("src")
+				if itemdata:
+					name = itemdata.get("data-name")
+					price = itemdata.get("data-price")
+					index =+ 1
+					product_data.insert(round(float(price),2),[name, img])
+
 
 def sort_to_excel(price_range):
-	Excel = openpyxl.Workbook()
-	doc = Excel.active#atver Excel
-	doc.title = "LEGO komplektu akcijas buklets" 
-	doc.append(["Nosaukums","Cena","Bilde","Attēlu URL"])
-	### SEIT VEIKT FILTRESANU
+	try:
+		Excel = openpyxl.Workbook()
+		doc = Excel.active  # atver Excel
+		doc.title = "LEGO komplektu akcijas buklets"
+		doc.append(["Nosaukums", "Cena", "Bilde"])
+		### SEIT VEIKT FILTRESANU
 
-	doc.column_dimensions['A'].width = 30  # Name
-	doc.column_dimensions['B'].width = 10  # Price
-	doc.column_dimensions['C'].width = 18  # Image URL (just for reference)
-	doc.column_dimensions['D'].width = 18  # Image display column
+		doc.column_dimensions['A'].width = 80  # Name
+		doc.column_dimensions['B'].width = 10  # Price
+		doc.column_dimensions['C'].width = 18  # Image URL (just for reference)
 
-	for block in product_data.table:
-		current = block
-		while current:
-			key = current.key
-			if key <= price_range:
-				value = current.value
-				if isinstance(value, list) and all(isinstance(i, list) and len(i) == 2 for i in value):
-					for item in value:
-						name, url = item
-						doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
-						doc.row_dimensions[doc.max_row].height = 100  # Set cell height for image
+		for block in product_data.table:
+			current = block
+			while current:
+				key = current.key
+				if key <= price_range:
+					value = current.value
+					if isinstance(value, list) and all(isinstance(i, list) and len(i) == 2 for i in value):
+						for item in value:
+							name, url = item
+							doc.append([name, f"{key}€", f'=_xlfn.IMAGE("{url}")'])
+							doc.row_dimensions[doc.max_row].height = 100  # Set cell height for image
 
-                # Handle a single [name, url] entry
-				else:
-					name, url = value
-					doc.append([name, key, f"=IMAGE(D{doc.max_row+1})", url])
-					doc.row_dimensions[doc.max_row].height = 100
+					# Handle a single [name, url] entry
+					else:
+						name, url = value
+						doc.append([name, f"{key}€", f'=_xlfn.IMAGE("{url}")'])
+						doc.row_dimensions[doc.max_row].height = 100
 
-            
-			current = current.next
-	
-	Excel.save("Lego_akcijas.xlsx")
-	print("File has been saved as Lego_akcijas.xlsx")
+				current = current.next
+
+		Excel.save("Lego_akcijas.xlsx")
+		print("Excel save complete")
+	except Exception:
+		print(f"Fails nav aizvērts, aizvērt to un restartēt programmu")
 
 userid = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"#nepieciesams ksenukajam
