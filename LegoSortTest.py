@@ -112,37 +112,63 @@ def search1(url,id):#prieks ksenukai/1alv
 					product_data.insert(round(float(price),2),[name, img])
 
 def search2(url,id):# TODO remake to 220lv
-	page = requests.get(url, headers=id)
-	if page.status_code == 200:
-		
-		soup = BeautifulSoup(page.content, "html.parser")
-		pagination = soup.select_one('div', class_= 'catalog-count').text.strip()  # elements pēdējam lapas ciparam
-		parts = pagination.split()
-		last_page = (parts[3])# atdala ciparu no elementiem
+    page = 1
 
-		for page_number in range(1,1+1):#KAD TESTE last_page samainit ar 1 
-			search_url = f"{url}/page/{page_number}"
-			page = requests.get(search_url, headers=id)
+    while True:
+        print(f"Searching page {page}...")
+        page_url = url.replace("/1/", f"/{page}/")
+        response = requests.get(page_url,headers=id)
 
-			soup = BeautifulSoup(page.content, "html.parser")
-			product_sections = soup.select("div.col-lg-3.col-md-6.product")
-			print(f"searching({page_number}/{last_page})...")
+        if response.status_code != 200:
+            print(f"lapai nevar piekļūt, kods:{response.status_code}")
+            break
+        print("test1")   ######     
+        soup = BeautifulSoup(response.text, "html.parser")
+        items_container = soup.find(class_="items")
+        if not items_container:
+            print("Nav atrasts nevienas preces")
+            break
+        print("test2") ######  
+        rows = items_container.find_all("div", class_="row")
+        found_any_item = False
+        print("test3")#######
+        for row in rows:
+            print(f"Searching row {page}...")
+            items = row.find_all("div", class_="item")
+            if not items:
+                continue
+            found_any_item = True
+            for item in items:
+                print(f"Searching item {page}...")
+                # Extract image
+                img_tag = item.find("img")
+                image_link = img_tag['src'] if img_tag else None
 
-			for block in product_sections:
-				#class_list = block.get("class", [])#nolasa klases ipasibas
-				#if "catalog-taxons-product--no-product" in class_list:#objekts nosaka ka produkts izpardots
-					#continue
-            
-				itemdata = block.find("div", class_="product-block")
-				itemimg = block.find("img", class_="catalog-img")
+                # Try to get product name (fallback to alt text or empty string)
+                name = img_tag.get("alt") if img_tag and img_tag.has_attr("alt") else "No Name"
 
-				if itemimg: 
-					img = itemimg.get("img-src") or itemimg.get("src")
-				if itemdata:
-					namediv = itemdata.find("div", class_="catalog-product-description")
-					name = namediv.find("a").text.strip() ;print(name)
-					price = itemdata.get("span.g-special-price") ;print(price)
-					product_data.insert(round(float(price),2),[name, img])
+                # Get price and value
+                price_block = item.find(class_="price")
+                price = None
+
+                if price_block:
+                    print(f"Searching price {page}...")
+                    price_tag = price_block.find("b", itemprop="price")
+                    if price_tag:
+                        try:
+                            price = float(price_tag.text.strip().replace(",", "."))
+                        except ValueError:
+                            continue  # skip if price isn't a valid number
+                print("10toes")############
+                if image_link and price is not None:
+                    print(f"Name: {name}, Price: {price}, Image: {image_link}")
+                    product_data.insert(round(price, 2), [name, image_link])
+        print("test4")########
+        if not found_any_item:
+            print("Test5")#######
+            break
+
+        page += 1
 
 
 def sort_to_excel(price_range):
@@ -190,10 +216,8 @@ userid2 = {
 }
 
 #izmantojamie url meklesana
-url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                           
-url2 = "https://www.ksenukai.lv/c/rotallietas-preces-berniem/lego/dgs?lf=1"                                     
-url3 = "https://220.lv/lv/lapaspuse/lego-popularakas"
-url4 = "https://berniem.eu/lv/lego-adults" 
+url1 = "https://www.1a.lv/c/berniem-mazuliem/lego-rotallietas-un-lelles/lego/37h?lf=1"#                                                              
+url2 = "https://m79.lv/rotallietasspeles/lego/1/f:5637150982-5637212832" 
 
 
 def test_values():
@@ -206,10 +230,9 @@ def test_values():
 product_data = HashTable(6000)
 
 #search1(url1,userid)#TODO FINISH AND UNCOMMENT
-#search1(url2,userid) #TODO FINISH AND UNCOMMENT
-search2(url4,userid2)
+search2(url2,userid)
 
 #test_values()
-sort_to_excel(500)
+#sort_to_excel(500)
 #page = requests.get(url4,headers=userid)
 #print(page.status_code)

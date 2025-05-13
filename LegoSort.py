@@ -114,7 +114,6 @@ def search1(url,id):#prieks ksenukai/1alv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index =+ 1
 					product_data.insert(round(float(price),2),[name, img])
 
 def search2(url,id):# amazon meklētājs TODO remake to 220lv
@@ -129,7 +128,7 @@ def search2(url,id):# amazon meklētājs TODO remake to 220lv
 			page = requests.get(search_url, headers=id)
 
 			soup = BeautifulSoup(page.content, "html.parser")
-			product_sections = soup.select("div.catalog-taxons-product")
+			product_sections = soup.select("div.items")
 			print(f"searching({page_number}/{last_page})...")
 
 			for block in product_sections:
@@ -145,7 +144,6 @@ def search2(url,id):# amazon meklētājs TODO remake to 220lv
 				if itemdata:
 					name = itemdata.get("data-name")
 					price = itemdata.get("data-price")
-					index =+ 1
 					product_data.insert(round(float(price),2),[name, img])
 
 
