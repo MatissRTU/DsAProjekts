@@ -207,7 +207,7 @@ url2 = "https://m79.lv/rotallietasspeles/lego/1/f:5637150982-5637212832"
 product_data = HashTable(5000)
 
 print("Sākta meklēšana 1A.lv...")
-#search1(url1,userid)
+search1(url1,userid)
 print("Sākta meklēšana m79.lv...")
 search2(url2,userid)
 
