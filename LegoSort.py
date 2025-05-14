@@ -93,7 +93,7 @@ def search1(url,id):#prieks 1alv
 		pagination = soup.select_one(".catalog-taxons-pagination .paginator__last")  # elements pēdējam lapas ciparam
 		last_page = int(pagination.text.strip())  # atdala ciparu no elementa
 	
-		for page_number in range(1,1+1):#KAD TESTE last_page samainit ar 1
+		for page_number in range(1,last_page+1):#KAD TESTE last_page samainit ar 1
 			search_url = f"{url}&page={page_number}"
 			page = requests.get(search_url, headers=id)
 
